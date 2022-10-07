@@ -3,8 +3,7 @@ Game framework for the playdate console.
 
 ## How to use
 
-- to import everything `import "chell-date"`
-- you can also import individual modules
+- `import "moduleName-date"`
 
 ## Design
 
