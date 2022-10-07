@@ -63,34 +63,34 @@ function Graphics()
 			backW > frontW and backW or frontW,
 			backH > frontH and backH or frontH
 		)
-		gfx.pushContext(img)
+		gfx.lockFocus(img)
 		back:draw(0, 0)
 		front:draw(0, 0)
-		gfx.popContext()
+		gfx.unlockFocus()
 		return img
 	end
 
 	function self.getCircleImage(r, filled, pattern)
 		local img = gfx.image.new(r * r, r * r)
-		gfx.pushContext(img)
+		gfx.lockFocus(img)
 		if filled then
 			gfx.fillCircleAtPoint(r, r, r)
 		else
 			gfx.drawCircleAtPoint(r, r, r)
 		end
-		gfx.popContext()
+		gfx.unlockFocus()
 		return img
 	end
 
 	function self.getRectImage(w, h, filled, pattern)
 		local img = gfx.image.new(w, h)
-		gfx.pushContext(img)
+		gfx.lockFocus(img)
 		if filled then
 			gfx.fillRect(0, 0, w, h)
 		else
 			gfx.drawRect(0, 0, w, h)
 		end
-		gfx.popContext()
+		gfx.unlockFocus()
 		return img
 	end
 
