@@ -66,12 +66,12 @@ function Graphics()
 	end
 
 	function self.getCircleImage(r, filled, pattern)
-		local img = gfx.image.new(r, r)
+		local img = gfx.image.new(r * r, r * r)
 		gfx.pushContext(img)
 		if filled then
-			gfx.fillCircleInRect(0, 0, r, r)
+			gfx.fillCircleAtPoint(r, r, r)
 		else
-			gfx.drawCircleInRect(0, 0, r, r)
+			gfx.drawCircleAtPoint(r, r, r)
 		end
 		gfx.popContext()
 		return img

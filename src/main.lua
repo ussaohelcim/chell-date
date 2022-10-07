@@ -19,6 +19,7 @@ shader.frag = function(x, y)
 end
 
 local img = shader.toImage()
+local t = gfx.getCircleImage(100, false)
 
 shader.frag = function(x, y)
 	local d = m.distance(x, y, midX, midY)
@@ -30,7 +31,7 @@ local img2 = shader.toImage()
 img = gfx.blendImages(img, img2)
 -- print(s.texture(img, 0, 0))
 
-local circles = PARTY(gfx.getCircleImage(5, true))
+local circles = PARTY(gfx.getCircleImage(100, true))
 local rects = PARTY(gfx.getRectImage(10, 10, false))
 local party = PartySystem({ circles, rects })
 
@@ -39,6 +40,7 @@ game.draw = function(dt)
 	gfx.centerCamera(cam.x, cam.y)
 	gfx.circle(0, 0, 100)
 	gfx.rect(0, 0, -100, 10)
+	t:draw(0, 0)
 	party.updateAndDraw(dt)
 	gfx.image(0, 0, img)
 end
