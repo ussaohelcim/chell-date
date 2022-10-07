@@ -18,8 +18,15 @@ function Graphics()
 	self.color = playdate.graphics.kColorClear
 
 	function self.clear()
-		playdate.graphics.clear()
-		playdate.graphics.setColor(0) --kColorClear
+		gfx.clear()
+		gfx.setColor(0) --kColorClear
+	end
+
+	---comment
+	-- - "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
+	---@param mode string
+	function self.setDrawMode(mode)
+		gfx.setImageDrawMode(mode)
 	end
 
 	function self.setColor(color)
@@ -30,7 +37,7 @@ function Graphics()
 		else
 			self.color = 1 --kColorWhite
 		end
-		playdate.graphics.setColor(self.color)
+		gfx.setColor(self.color)
 	end
 
 	function self.circle(x, y, r)
@@ -56,12 +63,10 @@ function Graphics()
 			backW > frontW and backW or frontW,
 			backH > frontH and backH or frontH
 		)
-
 		gfx.pushContext(img)
 		back:draw(0, 0)
 		front:draw(0, 0)
 		gfx.popContext()
-
 		return img
 	end
 
@@ -77,7 +82,7 @@ function Graphics()
 		return img
 	end
 
-	function self.getRectImage(w, h, filled)
+	function self.getRectImage(w, h, filled, pattern)
 		local img = gfx.image.new(w, h)
 		gfx.pushContext(img)
 		if filled then

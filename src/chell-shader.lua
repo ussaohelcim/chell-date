@@ -53,7 +53,7 @@ function FragmentShader(width, height)
 	function self.toImage()
 		local img = gfx.image.new(self.w, self.h)
 
-		gfx.pushContext(img)
+		gfx.lockFocus(img)
 
 		gfx.clear(gfx.kColorClear)
 
@@ -72,7 +72,7 @@ function FragmentShader(width, height)
 			end
 		end
 
-		gfx.popContext()
+		gfx.unlockFocus()
 
 		return img
 
