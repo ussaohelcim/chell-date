@@ -65,8 +65,28 @@ function Graphics()
 		return img
 	end
 
-	function self.getCircleImage(r, pattern, filled)
+	function self.getCircleImage(r, filled, pattern)
+		local img = gfx.image.new(r, r)
+		gfx.pushContext(img)
+		if filled then
+			gfx.fillCircleInRect(0, 0, r, r)
+		else
+			gfx.drawCircleInRect(0, 0, r, r)
+		end
+		gfx.popContext()
+		return img
+	end
 
+	function self.getRectImage(w, h, filled)
+		local img = gfx.image.new(w, h)
+		gfx.pushContext(img)
+		if filled then
+			gfx.fillRect(0, 0, w, h)
+		else
+			gfx.drawRect(0, 0, w, h)
+		end
+		gfx.popContext()
+		return img
 	end
 
 	return self
