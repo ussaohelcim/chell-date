@@ -24,6 +24,35 @@ function Input()
 		self.actions[action] = n
 	end
 
+	---Binds this binds to actions.
+	---Example:
+	---
+	---```lua
+	-- i.bind2({
+	-- 		{
+	-- 			keys = { playdate.kButtonA, playdate.kButtonB },action = "shoot"
+	-- 		},
+	-- 		{
+	-- 			keys = { playdate.kButtonA },	action = "a"
+	-- 		}
+	-- 	})
+	---```
+	---@param binds any
+	function self.bind2(binds)
+		for i = 1, #binds, 1 do
+			local b = binds[i]
+			print(b.action)
+			print(#b.keys)
+			local n = 0
+			for j = 1, #b.keys, 1 do
+				local k = b.keys[j]
+				n = n + k
+			end
+
+			self.actions[b.action] = n
+		end
+	end
+
 	function self.update()
 		current, pressed, released = getButtonState()
 	end
@@ -33,10 +62,15 @@ function Input()
 		return input == self.actions[action]
 	end
 
-	-- function self.justPressed(action)
-	-- 	input = pressed - released
-	-- 	return input == self.actions[action]
-	-- end
+	function self.justPressed(action)
+		input = pressed
+		return input == self.actions[action]
+	end
+
+	function self.justReleased(action)
+		input = released
+		return input == self.actions[action]
+	end
 
 	return self
 end
