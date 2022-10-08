@@ -57,8 +57,8 @@ function FragmentShader(width, height)
 
 		gfx.clear(gfx.kColorClear)
 
-		for y = 1, self.h - 1, 1 do
-			for x = 1, self.w - 1, 1 do
+		for y = 0, self.h - 1, 1 do
+			for x = 0, self.w - 1, 1 do
 				if self.frag(x, y) == 1 then
 					gfx.setColor(gfx.kColorBlack)
 					gfx.drawPixel(x, y)
