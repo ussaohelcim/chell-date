@@ -1,76 +1,120 @@
-local getButtonState = playdate.getButtonState
+-- local getButtonState = playdate.getButtonState
 
-function Input()
-	local self = {}
-	self.actions = {}
-	local input = 0
-	local current, pressed, released = 0, 0, 0
+-- function InputMap()
+-- 	local self = {}
+-- 	self.actions = {}
+-- 	local input = 0
+-- 	local current, pressed, released = 0, 0, 0
 
-	---Bind keys to an action.
-	---  Actions can be any data, such a number or a string.
-	---Example:
-	---
-	---`input.bind({ playdate.kButtonA, playdate.kButtonB }, "shoot")`
-	---@param keys table a list of keys
-	---@param action any some data
-	function self.bind(keys, action)
-		local n = 0
+-- 	---Bind keys to an action.
+-- 	---  Actions can be any data, such a number or a string.
+-- 	---Example:
+-- 	---
+-- 	---`input.bind({ playdate.kButtonA, playdate.kButtonB }, "shoot")`
+-- 	---@param keys table a list of keys
+-- 	---@param action any some data
+-- 	function self.bind(keys, action)
+-- 		local n = 0
 
-		for i = 1, #keys, 1 do
-			local k = keys[i]
-			n = n + k
-		end
+-- 		for i = 1, #keys, 1 do
+-- 			local k = keys[i]
+-- 			n = n + k
+-- 		end
 
-		self.actions[action] = n
-	end
+-- 		self.actions[action] = n
+-- 	end
 
-	---Binds this binds to actions.
-	---Example:
-	---
-	---```lua
-	-- i.bind2({
-	-- 		{
-	-- 			keys = { playdate.kButtonA, playdate.kButtonB },action = "shoot"
-	-- 		},
-	-- 		{
-	-- 			keys = { playdate.kButtonA },	action = "a"
-	-- 		}
-	-- 	})
-	---```
-	---@param binds any
-	function self.bind2(binds)
-		for i = 1, #binds, 1 do
-			local b = binds[i]
-			print(b.action)
-			print(#b.keys)
-			local n = 0
-			for j = 1, #b.keys, 1 do
-				local k = b.keys[j]
-				n = n + k
-			end
+-- 	---Binds this binds to actions.
+-- 	---Example:
+-- 	---
+-- 	---```lua
+-- 	-- i.bind2({
+-- 	-- 		{
+-- 	-- 			keys = { playdate.kButtonA, playdate.kButtonB },action = "shoot"
+-- 	-- 		},
+-- 	-- 		{
+-- 	-- 			keys = { playdate.kButtonA },	action = "a"
+-- 	-- 		}
+-- 	-- 	})
+-- 	---```
+-- 	---@param binds any
+-- 	function self.bind2(binds)
+-- 		for i = 1, #binds, 1 do
+-- 			local b = binds[i]
+-- 			print(b.action)
+-- 			print(#b.keys)
+-- 			local n = 0
+-- 			for j = 1, #b.keys, 1 do
+-- 				local k = b.keys[j]
+-- 				n = n + k
+-- 			end
 
-			self.actions[b.action] = n
-		end
-	end
+-- 			self.actions[b.action] = n
+-- 		end
+-- 	end
 
-	function self.update()
-		current, pressed, released = getButtonState()
-	end
+-- 	function self.update()
+-- 		-- print("input", input)
+-- 		current, pressed, released = getButtonState()
+-- 	end
 
-	function self.isHolding(action)
-		input = current - pressed - released
-		return input == self.actions[action]
-	end
+-- 	-- b = 16	a = 32
+-- 	-- left = 1 	right = 2
+-- 	-- up 4 down 8
 
-	function self.justPressed(action)
-		input = pressed
-		return input == self.actions[action]
-	end
+-- 	--1
+-- 	-- current	32	pressed	32	released	0
+-- 	-- current	32	pressed	0	released	0
+-- 	-- current	0	pressed	0	released	32
 
-	function self.justReleased(action)
-		input = released
-		return input == self.actions[action]
-	end
+-- 	--2
+-- 	-- current	16	pressed	16	released	0
+-- 	-- current	48	pressed	32	released	0
+-- 	-- current	48	pressed	0	released	0
+-- 	-- current	0	pressed	0	released	48
 
-	return self
-end
+-- 	-- current	4	pressed	0	released	0
+-- 	-- current	36	pressed	32	released	0
+-- 	-- current	36	pressed	0	released	0
+-- 	-- current	0	pressed	0	released	36
+
+-- 	--3
+-- 	-- current	41	pressed	41	released	0
+-- 	-- current	41	pressed	0	released	0
+-- 	-- current	33	pressed	0	released	8
+-- 	-- current	0	pressed	0	released	33
+
+-- 	-- --4
+-- 	-- current	1	pressed	1	released	0
+-- 	-- current	57	pressed	56	released	0
+-- 	-- current	57	pressed	0	released	0
+-- 	-- current	57	pressed	0	released	0
+-- 	-- current	41	pressed	0	released	16
+-- 	-- current	0	pressed	0	released	41
+
+
+-- 	function self.isHolding(action)
+-- 		input = current - pressed - released
+-- 		return input == self.actions[action]
+-- 	end
+
+-- 	function self.justPressed(action)
+-- 		---FIXME only works with 1,2 key #6
+-- 		input = pressed - current + current
+-- 		return input == self.actions[action]
+-- 	end
+
+-- 	function self.justReleased(action)
+-- 		---FIXME #6
+
+
+-- 		input = current + released
+
+-- 		-- input = input + (input - current + released) --works with 2,3 keys, but not 4 or more keys
+-- 		--input = released //works with 1 key
+-- 		return input == self.actions[action]
+-- 	end
+
+-- 	--TODO checar se o botao solto tava entre os botoes da action (como diabos vou fazer isso?)
+-- 	return self
+-- end
