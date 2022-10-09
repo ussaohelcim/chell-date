@@ -48,7 +48,7 @@ function Graphics()
 		gfx.drawRect(x + (ox or 0), y + (oy or 0), w, h)
 	end
 
-	function self.image(x, y, image, ox, oy)
+	function self.image(image, x, y, ox, oy)
 		image:draw(x + (ox or 0), y + (oy or 0))
 	end
 

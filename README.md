@@ -12,7 +12,7 @@ The design goal of this framework is to use static functions to handle everythin
 ## chell-date callbacks
 
 - update(dt)
-	- second callback to be called every frame
+	- first callback to be called every frame
 - draw(dt)
 	- last callback to be called every frame
 
@@ -37,21 +37,21 @@ game.update = function(dt)
 end
 ```
 ```lua
----chell-input
-import "chell-input"
-local i = Input()
-
-i.bind(
-	{ playdate.kButtonA, playdate.kButtonB }, "special"
+---chell-animation
+import "chell-animation"
+local anim = Animation(
+	{
+		Frame("frame1", 0.2),
+		Frame("frame2", 0.2),
+		Frame("frame3", 0.2),
+	}
 )
 
-playdate.update = function()
-	i.update()
-	
-	if i.isHolding("special") then
-		special()
-	end
+playdate.update = function (dt)
+	anim.update(dt)
+	anim.image:draw()
 end
+
 ```
 ```lua
 ---chell-graphics
@@ -82,6 +82,28 @@ playdate.update = function()
 	img:draw(x,y)
 end
 
+```
+
+```lua
+---chell-math
+import "chell-math"
+
+local m = Math()
+local c = Collision()
+local ball = { 0, 0, 10 }
+local ball2 = { 15, 5, 10 }
+
+if c.checkColissionCircleRect(
+	ball[1], ball[2], ball[3],
+	ball2[1], ball2[2], ball2[3]
+) then
+	print("colliding")
+end
+
+print(m.distance(
+		ball[1], ball[2],
+		ball2[1], ball2[2],
+	))
 ```
 
 ## About contributing and using
