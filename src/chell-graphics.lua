@@ -96,3 +96,17 @@ function Graphics()
 
 	return self
 end
+
+function Image(path, ox, oy)
+	local s = {}
+
+	s.img = gfx.image.new(path)
+	s.originX = ox or 0
+	s.originY = oy or 0
+
+	function s.draw(x, y)
+		s.img:draw(x + s.originX, y + s.originY)
+	end
+
+	return s
+end
