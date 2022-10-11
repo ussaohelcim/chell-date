@@ -5,7 +5,7 @@
 local gfx = playdate.graphics
 local popContext = gfx.popContext
 local pushContext = gfx.pushContext
-
+local getTime = playdate.getCurrentTimeMilliseconds
 --- 0 = white
 --- 1 = black
 --- -1 = clear
@@ -28,7 +28,7 @@ function ShaderUtils()
 	---@return integer
 	function self.texture(img, x, y)
 		return playdateColorToChellColor(
-			img:sample(x, y)
+			self.img:sample(x, y)
 		)
 	end
 
@@ -37,32 +37,42 @@ end
 
 function FragmentShader(width, height)
 	local self = {}
+
+	self.TIME = 0
 	self.w = width
 	self.h = height
+	self.img = gfx.image.new(self.w, self.h)
 
-	---Called for every pixel. MUST return 0,1.
+	---Called for every pixel. MUST return -1,0,1.
 	--  - 0 = white
 	--  - 1 = black
 	--  - -1 = clear
 	---@param x number x position inside [0,width)
 	---@param y number y position inside [0,height)
 	---@return number
-	function self.frag(x, y) end
+	function self.frag(x, y, dt) end
 
 	---Returns a playdate image of this fragment shader
 	function self.toImage()
-		local img = gfx.image.new(self.w, self.h)
+		self.update(1)
 
-		gfx.lockFocus(img)
+		return self.img
 
-		gfx.clear(gfx.kColorClear)
+	end
+
+	function self.update(dt)
+		self.TIME = getTime()
+
+		gfx.lockFocus(self.img)
+
+		gfx.clear()
 
 		for y = 0, self.h - 1, 1 do
 			for x = 0, self.w - 1, 1 do
-				if self.frag(x, y) == 1 then
+				if self.frag(x, y, dt) == 1 then
 					gfx.setColor(gfx.kColorBlack)
 					gfx.drawPixel(x, y)
-				elseif self.frag(x, y) == 0 then
+				elseif self.frag(x, y, dt) == 0 then
 					gfx.setColor(gfx.kColorWhite)
 					gfx.drawPixel(x, y)
 				end
@@ -70,10 +80,39 @@ function FragmentShader(width, height)
 		end
 
 		gfx.unlockFocus()
-
-		return img
-
 	end
 
 	return self
+end
+
+function TextShader(txt, x, y, w)
+	local s = FragmentShader(400, 240)
+
+	local text = {}
+	local _w = w or 10
+	for i = 1, #txt, 1 do
+		local c = string.sub(txt, i, i)
+		text[i] = c
+	end
+
+	s.shaderList = {}
+	s.x = x
+	s.y = y
+
+	function s.update(dt)
+		s.TIME = getTime()
+
+		playdate.graphics.lockFocus(s.img)
+		playdate.graphics.clear()
+
+		for i = 1, #text, 1 do
+			local nx, ny = s.frag(
+				s.x + (_w * (i - 1)), s.y, i, dt
+			)
+			playdate.graphics.drawText(text[i], nx, ny)
+		end
+		playdate.graphics.unlockFocus()
+	end
+
+	return s
 end
