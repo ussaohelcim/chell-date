@@ -17,18 +17,26 @@
 
 ---Returns an animation table
 ---@param frameList Frame list of frames (Frame())
+---@param loop boolean is this animation loopable?
 ---@return table
-function Animation(frameList)
+function Animation(frameList, loop)
 	local self = {}
 	self.cursorPosition = 1
 	self.size = #frameList
 	self.image = frameList[self.cursorPosition].image
 	self.timeToNext = frameList[self.cursorPosition].duration
+	self.loop = loop
+
+	self.totalTime = 0
+
+	for i = 1, #frameList, 1 do
+		self.totalTime = self.totalTime + frameList[i].duration
+	end
 
 	function self.update(dt)
 		self.timeToNext = self.timeToNext - dt
 
-		if self.timeToNext <= 0 then
+		if self.timeToNext <= 0 and self.loop then
 			self.cursorPosition = self.cursorPosition + 1
 
 			if self.cursorPosition > self.size then

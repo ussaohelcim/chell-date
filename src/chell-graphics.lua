@@ -12,21 +12,38 @@ local max = math.max
 local min = math.min
 local floor = math.floor
 
+local gfx = playdate.graphics
+local popContext = gfx.popContext
+local pushContext = gfx.pushContext
+local clear = gfx.clear
+local lockFocus = gfx.lockFocus
+local unlockFocus = gfx.unlockFocus
+local drawPixel = gfx.drawPixel
+local setColor = gfx.setColor
+local drawText = gfx.drawText
+local setImageDrawMode = gfx.setImageDrawMode
+local drawRect = gfx.drawRect
+local setDrawOffset = gfx.setDrawOffset
+
+local white = gfx.kColorWhite
+local black = gfx.kColorBlack
+local transparent = gfx.kColorClear
+
 function Graphics()
 	local self = {}
 
 	self.color = playdate.graphics.kColorClear
 
 	function self.clear()
-		gfx.clear()
-		gfx.setColor(0) --kColorClear
+		clear()
+		setColor(0) --kColorClear
 	end
 
-	---comment
+	---Set the draw mode for images and texts.
 	-- - "copy", "inverted", "XOR", "NXOR", "whiteTransparent", "blackTransparent", "fillWhite", or "fillBlack".
 	---@param mode string
 	function self.setDrawMode(mode)
-		gfx.setImageDrawMode(mode)
+		setImageDrawMode(mode)
 	end
 
 	function self.setColor(color)
@@ -44,8 +61,20 @@ function Graphics()
 		drawCircleAtPoint(x, y, r)
 	end
 
+	function self.fillCircle(x, y, r)
+		gfx.fillCircleAtPoint(x, y, r)
+	end
+
+	function self.arc()
+		-- gfx.drawArc()
+	end
+
 	function self.rect(x, y, w, h, ox, oy)
-		gfx.drawRect(x + (ox or 0), y + (oy or 0), w, h)
+		drawRect(x + (ox or 0), y + (oy or 0), w, h)
+	end
+
+	function self.fillRect(x, y, w, h, ox, oy)
+		gfx.fillRect(x + (ox or 0), y + (oy or 0), w, h)
 	end
 
 	function self.image(image, x, y, ox, oy)
@@ -53,7 +82,7 @@ function Graphics()
 	end
 
 	function self.centerCamera(x, y)
-		gfx.setDrawOffset(x + (screenW * 0.5), y + (screenH * 0.5))
+		setDrawOffset(x + (screenW * 0.5), y + (screenH * 0.5))
 	end
 
 	function self.blendImages(back, front)
@@ -63,22 +92,22 @@ function Graphics()
 			backW > frontW and backW or frontW,
 			backH > frontH and backH or frontH
 		)
-		gfx.lockFocus(img)
+		lockFocus(img)
 		back:draw(0, 0)
 		front:draw(0, 0)
-		gfx.unlockFocus()
+		unlockFocus()
 		return img
 	end
 
 	function self.getCircleImage(r, filled, pattern)
 		local img = gfx.image.new(r * r, r * r)
-		gfx.lockFocus(img)
+		lockFocus(img)
 		if filled then
 			gfx.fillCircleAtPoint(r, r, r)
 		else
-			gfx.drawCircleAtPoint(r, r, r)
+			drawCircleAtPoint(r, r, r)
 		end
-		gfx.unlockFocus()
+		unlockFocus()
 		return img
 	end
 

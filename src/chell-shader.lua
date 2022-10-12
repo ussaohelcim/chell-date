@@ -2,10 +2,22 @@
 -- gfx.kColorBlack --0
 -- gfx.kColorWhite --1
 
+local getTime = playdate.getCurrentTimeMilliseconds
+
 local gfx = playdate.graphics
 local popContext = gfx.popContext
 local pushContext = gfx.pushContext
-local getTime = playdate.getCurrentTimeMilliseconds
+local clear = gfx.clear
+local lockFocus = gfx.lockFocus
+local unlockFocus = gfx.unlockFocus
+local drawPixel = gfx.drawPixel
+local setColor = gfx.setColor
+local drawText = gfx.drawText
+
+local white = gfx.kColorWhite
+local black = gfx.kColorBlack
+local transparent = gfx.kColorClear
+
 --- 0 = white
 --- 1 = black
 --- -1 = clear
@@ -38,7 +50,6 @@ end
 function FragmentShader(width, height)
 	local self = {}
 
-	self.TIME = 0
 	self.w = width
 	self.h = height
 	self.img = gfx.image.new(self.w, self.h)
@@ -61,25 +72,23 @@ function FragmentShader(width, height)
 	end
 
 	function self.update(dt)
-		self.TIME = getTime()
+		lockFocus(self.img)
 
-		gfx.lockFocus(self.img)
-
-		gfx.clear()
+		clear()
 
 		for y = 0, self.h - 1, 1 do
 			for x = 0, self.w - 1, 1 do
 				if self.frag(x, y, dt) == 1 then
-					gfx.setColor(gfx.kColorBlack)
-					gfx.drawPixel(x, y)
+					setColor(black)
+					drawPixel(x, y)
 				elseif self.frag(x, y, dt) == 0 then
-					gfx.setColor(gfx.kColorWhite)
-					gfx.drawPixel(x, y)
+					setColor(white)
+					drawPixel(x, y)
 				end
 			end
 		end
 
-		gfx.unlockFocus()
+		unlockFocus()
 	end
 
 	return self
@@ -99,19 +108,19 @@ function TextShader(txt, x, y, w)
 	s.x = x
 	s.y = y
 
-	function s.update(dt)
-		s.TIME = getTime()
+	function s.frag(_x, _y, i, dt) end
 
-		playdate.graphics.lockFocus(s.img)
-		playdate.graphics.clear()
+	function s.update(dt)
+		lockFocus(s.img)
+		clear()
 
 		for i = 1, #text, 1 do
 			local nx, ny = s.frag(
 				s.x + (_w * (i - 1)), s.y, i, dt
 			)
-			playdate.graphics.drawText(text[i], nx, ny)
+			drawText(text[i], nx, ny)
 		end
-		playdate.graphics.unlockFocus()
+		unlockFocus()
 	end
 
 	return s
