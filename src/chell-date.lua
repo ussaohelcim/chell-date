@@ -34,10 +34,8 @@ local timeDT = playdate.getCurrentTimeMilliseconds
 local _lastDT = timeDT()
 local getButtonState = playdate.getButtonState
 
-function Chell()
+function Scene()
 	local self = {}
-	local input = {}
-
 	_lastDT = timeDT()
 
 	local function _Update()
@@ -49,7 +47,10 @@ function Chell()
 		self.draw(dt * 0.001)
 	end
 
-	playdate.update = _Update
+	---Start this scene. This replace the playdate.update to this scene.
+	function self.start()
+		playdate.update = _Update
+	end
 
 	---Draw callback, called every frame
 	---@param dt number time since last engine update in seconds
@@ -58,10 +59,6 @@ function Chell()
 	---Update callback, called every frame
 	---@param dt number time since last engine update in seconds
 	function self.update(dt) end
-
-	---Input callback, called every frame
-	---@param btn any
-	function self.input(btn) end
 
 	return self
 end

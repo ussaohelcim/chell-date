@@ -22,19 +22,30 @@ The design goal of this framework is to use static functions to handle everythin
 ---chell-date
 import "chell-date"
 
-local game = Chell()
+local game1 = Scene()
+local game2 = Scene()
 
---set draw callback
-game.draw = function(dt)
-	playdate.graphics.clear()
-	playdate.graphics.drawCircleAtPoint(x,y,r)
-end
-
-game.update = function(dt)
-	if playdate.buttonJustPressed("a") then
-		jump()
+game1.update = function(dt)
+	if playdate.buttonJustPressed('a') then
+		game2.start()
 	end
 end
+
+game2.update = function(dt)
+	if playdate.buttonJustPressed('a') then
+		game1.start()
+	end
+end
+
+game2.draw = function(dt)
+	playdate.graphics.drawText("scene1", 0, 0)
+end
+
+game1.draw = function(dt)
+	playdate.graphics.drawText("scene1", 0, 0)
+end
+
+game1.start()
 ```
 ```lua
 ---chell-animation

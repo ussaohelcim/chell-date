@@ -34,7 +34,7 @@ if($run){
 		$simulator | Stop-Process -Force
 	}
 
-	Write-Host "Starting game on simulator" -ForegroundColor Green
+	Write-Host "Starting game on simulator" "$dist.pdx"-ForegroundColor Green
 
-	& PlaydateSimulator "$fileName.pdx"
+	& PlaydateSimulator "$dist.pdx"
 }
