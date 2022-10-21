@@ -47,6 +47,29 @@ end
 
 game1.start()
 ```
+
+```lua
+--chell-events
+import "chell-events"
+
+local game = Scene()
+local events = EventManager()
+events.addLoopEvent(2, function()
+	print("2 seconds")
+end)
+
+events.addOneshotEvent(5, function()
+	print("5 seconds oneshot")
+end)
+
+game.start()
+
+game.update = function(dt)
+	events.update(dt)
+end
+
+```
+
 ```lua
 ---chell-animation
 import "chell-animation"
