@@ -49,6 +49,40 @@ game1.start()
 ```
 
 ```lua
+---chell-gobj
+import "chell-gobj"
+
+function PositionComponent(x, y)
+	local s = Component()
+	s.__name = "PositionComponent"
+	s.x = x or 0
+	s.y = y or 0
+	return s
+	--example
+end
+
+function AssComponent()
+	local s = Component()
+	s.__name = "ass"
+	function s.fart()
+		print("puum")
+	end
+
+	return s
+end
+
+local obj = GameObject()
+
+obj.addComponents(
+	PositionComponent(200, 100),
+	AssComponent()
+)
+
+print(obj.PositionComponent.x)--200
+obj.ass.fart()--puum
+```
+
+```lua
 --chell-events
 import "chell-events"
 
