@@ -24,10 +24,30 @@ local drawText = gfx.drawText
 local setImageDrawMode = gfx.setImageDrawMode
 local drawRect = gfx.drawRect
 local setDrawOffset = gfx.setDrawOffset
-
+local setPattern = gfx.setPattern
+local drawText = gfx.drawText
+local drawArc = playdate.graphics.drawArc
+local drawTextAligned = gfx.drawTextAligned
 local white = gfx.kColorWhite
 local black = gfx.kColorBlack
 local transparent = gfx.kColorClear
+local rad = math.rad
+local copyMode = gfx.kDrawModeCopy
+
+local whitePattern = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF }
+local lightGrayPattern = { 0xFF, 0xDD, 0xFF, 0x77, 0xFF, 0xDD, 0xFF, 0x77 }
+local checkerBoardpattern = { 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55, 0xaa, 0x55 }
+local darkGrayPattern = { 0x0, 0x22, 0x0, 0x88, 0x0, 0x22, 0x0, 0x88 }
+local blackPattern = { 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0 }
+local anotherGray = { 0xFF, 0xAA, 0xFF, 0xAA, 0xFF, 0xAA, 0xFF, 0xAA }
+
+local align_center = kTextAlignment.center
+local align_left = kTextAlignment.left
+local align_right = kTextAlignment.right
+
+local function isInBetween(value, _min, _max)
+	return value >= _min and value <= _max
+end
 
 function Graphics()
 	local self = {}
@@ -37,6 +57,7 @@ function Graphics()
 	function self.clear()
 		clear()
 		setColor(0) --kColorClear
+		setImageDrawMode(copyMode)
 	end
 
 	---Set the draw mode for images and texts.
@@ -65,8 +86,14 @@ function Graphics()
 		gfx.fillCircleAtPoint(x, y, r)
 	end
 
-	function self.arc()
-		-- gfx.drawArc()
+	---Draw an arc. This use radians.
+	function self.arc_r(x, y, r, sa, ea)
+		drawArc(x, y, r, rad(sa), rad(ea))
+	end
+
+	---Draw an arc. This use degrees.
+	function self.arc_d(x, y, r, sa, ea)
+		drawArc(x, y, r, sa, ea)
 	end
 
 	function self.rect(x, y, w, h, ox, oy)
@@ -81,8 +108,56 @@ function Graphics()
 		image:draw(x + (ox or 0), y + (oy or 0))
 	end
 
+	function self.imageCenter(image, x, y)
+		image:drawCentered(x, y)
+	end
+
+	local _fillPattern
+
+	---comment
+	---@param o number [0,..,1] 0 = white, 0.5 = gray, 1 = black
+	function self.setFillPatternLevel(o)
+		if isInBetween(o, 0.67, 0.9) then
+			_fillPattern = darkGrayPattern
+		elseif isInBetween(o, 0.34, 0.66) then
+			_fillPattern = checkerBoardpattern
+		elseif isInBetween(o, 0.1, 0.33) then
+			_fillPattern = lightGrayPattern
+		end
+
+		if o < 0.1 then
+			_fillPattern = whitePattern
+		elseif o > 0.9 then
+			_fillPattern = blackPattern
+		end
+
+		setPattern(_fillPattern)
+
+	end
+
+	local fontHeight = playdate.graphics.getFont():getHeight()
+	local fontHeightMid = fontHeight * 0.5
+
+	function self.text(txt, x, y, ox, oy)
+		drawText(txt, x + (ox or 0), y + (oy or 0))
+	end
+
+	---@see error do not use every frame, this generate a lot of garbage
+	function self.textRect(txt, x, y, w, h)
+		gfx.drawTextInRect(txt, x, y, w, h)
+	end
+
+	---@see error do not use every frame, this generate a lot of garbage
+	function self.textCenter(txt, x, y)
+		drawTextAligned(txt, x, y - fontHeightMid, align_center)
+	end
+
 	function self.centerCamera(x, y)
-		setDrawOffset(x + (screenW * 0.5), y + (screenH * 0.5))
+		setDrawOffset(x - (screenW * 0.5), y - (screenH * 0.5))
+	end
+
+	function self.grayPattern()
+		setPattern(checkerBoardpattern)
 	end
 
 	function self.blendImages(back, front)
@@ -123,6 +198,14 @@ function Graphics()
 		return img
 	end
 
+	function self.generateImage(callback, w, h)
+		local img = gfx.image.new(w or 400, h or 240)
+		gfx.lockFocus(img)
+		callback()
+		gfx.unlockFocus()
+		return img
+	end
+
 	return self
 end
 
@@ -139,3 +222,5 @@ function Image(path, ox, oy)
 
 	return s
 end
+
+--TODO implementar os tutorials no inicio

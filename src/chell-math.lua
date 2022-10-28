@@ -5,7 +5,6 @@ local min = math.min
 local floor = math.floor
 local cos = math.cos
 local sin = math.sin
-local sqrt = math.sqrt
 local TAU = math.pi * 2
 
 function Math()
@@ -21,7 +20,7 @@ function Math()
 		return max(a, min(b, x));
 	end
 
-	---Returns the scalar dot product of two same-typed vectors 1 and 2.
+	---Returns the scalar dot product of two vectors 1 and 2.
 	---@param x1 number
 	---@param y1 number
 	---@param x2 number
@@ -29,6 +28,10 @@ function Math()
 	---@return number
 	function self.dot(x1, y1, x2, y2)
 		return x1 * x2 + y1 * y2
+	end
+
+	function self.nextMultipleOf(offset, value)
+		return offset + (value - offset % value)
 	end
 
 	---Returns the Euclidean distance from a first point pt1 to a second point pt2.
@@ -96,12 +99,46 @@ function Math()
 
 	---Returns the linear interpolation of a and b based on weight t. (!can be extrapolated!)
 	-- 1) a and b are either both scalars or both vectors of the same length. The weight t may be a scalar or a vector of the same length as a and b. t can be any value (so is not restricted to be between zero and one); if t has values outside the [0,1] range, it actually extrapolates.
-	---@param a number
-	---@param b number
-	---@param t number
+	---@param src number
+	---@param dst number
+	---@param value number
 	---@return number
-	function self.lerp(a, b, t)
-		return a + t * (b - a);
+	function self.lerp(src, dst, value)
+		return src + value * (dst - src);
+	end
+
+	---Returns v²
+	---@param v number
+	---@return number
+	function self.square(v)
+		return v * v
+	end
+
+	---Ternary operator.
+	---Usage :num = 3 ; print(m.iff(num == 2,"two","not two")) ---"not two"
+	---@param comparison any
+	---@param ifTrue any
+	---@param ifFalse any
+	---@return any
+	function self.iff(comparison, ifTrue, ifFalse)
+		return comparison and ifTrue or ifFalse
+	end
+
+	function self.remap(v, old_min, old_max, new_min, new_max)
+		return ((v - old_min) / (old_max - old_min)) * (new_max - new_min) + new_min
+	end
+
+	function self.angleToUnitVector(angle, out)
+		out.x = cos(angle)
+		out.y = sin(angle)
+	end
+
+	function self.isInBetween(value, _min, _max)
+		return value >= _min and value <= _max
+	end
+
+	function self.ping(value, t)
+		return (cos(value + t) + 1) * 0.5
 	end
 
 	return self
@@ -120,6 +157,40 @@ function Collision()
 
 		-- local distance = sqrt(dx * dx + dy * dy)
 		-- return distance <= (c1r + c2r)
+	end
+
+	---Slow, this uses sqrt.
+	--FIXME não usar sqrt
+	function s.checkCollisionPointLine(px, py, x, y, xx, yy)
+		local d1 = sqrt((px - x) * (px - x) + (py - y) * (py - y)) --distance between point and line[0]
+		local d2 = sqrt((px - xx) * (px - xx) + (py - yy) * (py - yy)) --distance between point and line[1]
+		local lineLen = m.distance(x, y, xx, yy)
+
+		return m.isInBetween(d1 + d2, 0, lineLen)
+	end
+
+	---só funciona em linhas "infinitas"
+	--FIXME não usar sqrt
+	--FIXME só funciona em linhas "infinitas"
+	function s.checkCollisionCircleLine(cx, cy, cr, x1, y1, x2, y2)
+
+		local dx, dy = x1 - x2, y1 - y2
+		local length = sqrt(dx * dx + dy * dy) --distancia
+		local dot = (((cx - x1) * (x2 - x1)) + ((cy - y1) * (y2 - y1))) / (length * length)
+
+		local closestX = x1 + (dot * (x2 - x1));
+		local closestY = y1 + (dot * (y2 - y1));
+
+		dx = closestX - cx
+		dy = closestY - cy
+
+		local distance = sqrt(dx * dx + dy * dy)
+
+		if distance <= cr then
+			return true
+		end
+
+		return false
 	end
 
 	function s.checkCollisionPointCircle(x, y, cx, cy, cr)
